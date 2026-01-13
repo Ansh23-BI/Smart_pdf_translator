@@ -65,6 +65,9 @@ with st.sidebar:
     st.subheader("🤖 Model Selection")
     model_options = {
         "GPT-4o (Recommended)": "openai/gpt-4o",
+        "GPT-4o Mini (Fast & Cheap)": "openai/gpt-4o-mini",
+        "Claude 3.5 Sonnet (Excellent)": "anthropic/claude-3.5-sonnet-20241022",
+        "Claude 3.5 Haiku (Fast)": "anthropic/claude-3.5-haiku",
         "GPT-4 Turbo": "openai/gpt-4-turbo",
         "Claude 3.5 Sonnet": "anthropic/claude-3.5-sonnet-20241022",
         "Claude 3 Opus": "anthropic/claude-3-opus",
