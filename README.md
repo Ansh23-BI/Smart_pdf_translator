@@ -65,12 +65,15 @@ The app will open in your browser at `http://localhost:8501`
 
 1. **Enter API Key** - Add your OpenRouter API key in the sidebar
 2. **Select Model** - Choose an AI model (GPT-4o recommended)
-3. **Choose Languages** - Select source and target languages
+3. **Choose Languages** - Select source and target languages or let the LLM detect the language.
 4. **Upload PDF** - Drag and drop your PDF file
 5. **Select Pages** - Choose which pages to translate
 6. **Adjust Wait Time** - Set delay between pages (15s recommended for free models)
 7. **Start Translation** - Click the button and wait for completion
 8. **Download** - Save your translation as TXT or Markdown
+9. **PDF Converter** - Convert the output to pdf
+10. **Download the PDF** - Once converted you will see a download button to download the same.
+11. **Restart Translation** - Restart the translation based on the requirement.
 
 ## 🤖 Supported Models
 
@@ -88,6 +91,7 @@ The app will open in your browser at `http://localhost:8501`
 
 - Gujarati
 - Hindi
+- French
 - English
 - Marathi
 - Tamil
