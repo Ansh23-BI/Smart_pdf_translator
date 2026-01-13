@@ -100,7 +100,7 @@ with st.sidebar:
     
     target_lang = st.selectbox(
         "Target Language (translation)",
-        ["English", "Hindi", "Gujarati", "Marathi", "Tamil", "Telugu", "Bengali", "Punjabi"],
+        ["English", "Hindi"],
         index=0
     )
     
