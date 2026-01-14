@@ -6,6 +6,7 @@ import os
 from dotenv import load_dotenv
 import time
 import tempfile
+from multilang_pdf_converter import txt_to_pdf_multilang
 
 # Load environment variables
 load_dotenv()
@@ -100,7 +101,7 @@ with st.sidebar:
     
     target_lang = st.selectbox(
         "Target Language (translation)",
-        ["English", "Hindi"],
+        ["English", "Hindi", "Tamil", "Bengali", "Gujarati", "Telugu", "Kannada", "Malayalam", "Punjabi"],
         index=0
     )
     
@@ -246,7 +247,7 @@ Format your response EXACTLY like this:
 translated text here"""
     else:
         lang_instruction = f"This image contains {source_lang} text. Translate it to {target_lang}."
-    
+    print(lang_instruction)
     payload = {
         "model": model_id,
         "messages": [
@@ -321,93 +322,6 @@ Provide ONLY the {target_lang} translation without any additional explanations."
     
     return None, None, "All retry attempts failed"
 
-def txt_to_pdf_with_hindi(text_content, font_path=None):
-    """Convert TXT to PDF with Hindi support"""
-    try:
-        # Check for Hindi font
-        if not font_path or not os.path.exists(font_path):
-            font_path = "NotoSansDevanagari-Regular.ttf"
-            if not os.path.exists(font_path):
-                return None, "Hindi font (NotoSansDevanagari-Regular.ttf) not found in project folder"
-        
-        # Try using reportlab for better Hindi support
-        try:
-            from reportlab.lib.pagesizes import A4
-            from reportlab.pdfgen import canvas
-            from reportlab.pdfbase import pdfmetrics
-            from reportlab.pdfbase.ttfonts import TTFont
-            from io import BytesIO
-            
-            # Register the font
-            pdfmetrics.registerFont(TTFont('Devanagari', font_path))
-            
-            # Create PDF
-            buffer = BytesIO()
-            c = canvas.Canvas(buffer, pagesize=A4)
-            width, height = A4
-            
-            # Split content by pages if marked
-            if "--- Page" in text_content:
-                pages_content = text_content.split("--- Page")
-            else:
-                pages_content = [text_content]
-            
-            for page_content in pages_content:
-                if not page_content.strip():
-                    continue
-                
-                y = height - 50  # Start from top
-                
-                # Split into lines
-                lines = page_content.strip().split('\n')
-                
-                for line in lines:
-                    if y < 50:  # New page if at bottom
-                        c.showPage()
-                        y = height - 50
-                    
-                    if line.strip():
-                        # Use the Hindi font
-                        c.setFont('Devanagari', 11)
-                        
-                        # Word wrap
-                        max_width = width - 100
-                        words = line.split()
-                        current_line = ""
-                        
-                        for word in words:
-                            test_line = current_line + " " + word if current_line else word
-                            # Simple width estimation
-                            if c.stringWidth(test_line, 'Devanagari', 11) > max_width and current_line:
-                                c.drawString(50, y, current_line)
-                                y -= 16
-                                current_line = word
-                                if y < 50:
-                                    c.showPage()
-                                    y = height - 50
-                            else:
-                                current_line = test_line
-                        
-                        if current_line:
-                            c.drawString(50, y, current_line)
-                            y -= 16
-                    else:
-                        y -= 8  # Blank line
-                
-                c.showPage()  # New page for next section
-            
-            c.save()
-            pdf_bytes = buffer.getvalue()
-            buffer.close()
-            
-            return pdf_bytes, None
-            
-        except ImportError:
-            # Fallback message if reportlab not available
-            return None, "Please install reportlab: pip install reportlab"
-        
-    except Exception as e:
-        return None, f"Error creating PDF: {str(e)}"
 
 # Start translation button
 if uploaded_file and api_key:
@@ -532,7 +446,7 @@ if st.session_state.translation_complete:
     # PDF Conversion Section
     st.divider()
     st.subheader("📄 Convert to PDF")
-    st.info("💡 Convert your translation to PDF with proper Hindi font support")
+    st.info("💡 Convert your translation to PDF ")
     
     col_pdf_btn, col_pdf_info = st.columns([1, 2])
     
@@ -540,25 +454,25 @@ if st.session_state.translation_complete:
         convert_to_pdf = st.button("🔄 Convert to PDF", use_container_width=True, type="primary")
     
     with col_pdf_info:
-        st.caption("⚠️ Requires NotoSansDevanagari-Regular.ttf in project folder")
+        st.caption("⚠️ Requires NotoSans fonts in fonts folder")
     
     if convert_to_pdf:
-        with st.spinner("📝 Creating PDF with Hindi font..."):
-            pdf_bytes, error = txt_to_pdf_with_hindi(st.session_state.final_translation)
+        with st.spinner("📝 Creating PDF ..."):
+            pdf_bytes, error = txt_to_pdf_multilang(st.session_state.final_translation,target_language=st.session_state.target_lang)
             
             if error:
                 st.error(f"❌ {error}")
-                with st.expander("💡 How to fix this"):
+                with st.expander("💡 How to fix this,example hindi"):
                     st.markdown("""
                     **Steps to add Hindi font:**
                     1. Download [Noto Sans Devanagari](https://fonts.google.com/noto/specimen/Noto+Sans+Devanagari)
                     2. Extract the zip file
                     3. Find `NotoSansDevanagari-Regular.ttf` 
-                    4. Copy it to your project folder (same location as app.py)
+                    4. Copy it to your project folder inside the created subfolder fonts 
                     5. Try converting again
                     """)
             else:
-                st.success("✅ PDF created successfully with Hindi font!")
+                st.success("✅ PDF created successfully !")
                 
                 # Make download button prominent
                 st.markdown("### 📥 Your PDF is Ready!")
